@@ -29,7 +29,7 @@ public class NonTerminal {
         if(currentToken.getToken().equals(".")){
             System.out.println("Success");
         }else{
-            System.out.println("Error");
+            System.out.println("Error program Declaration \t" + currentToken);
         }
     }
 
@@ -38,7 +38,7 @@ public class NonTerminal {
         if(currentToken.getToken().equals("program")){
              currentToken = tokens.poll();
         }else{
-            System.out.println("Error");
+            System.out.println("Error heading \t" + currentToken);
             return;
         }
 
@@ -63,7 +63,7 @@ public class NonTerminal {
         if(currentToken.getToken().equals("begin")){
             currentToken = tokens.poll();
         }else{
-            System.out.println("Error");
+            System.out.println("Error block \t" + currentToken);
             return;
         }
 
@@ -92,7 +92,7 @@ public class NonTerminal {
             constList();
 
         }else if(!currentToken.getToken().equals("var") && !currentToken.getToken().equals("begin")){
-            System.out.println("Error");
+            System.out.println("Error const declaration \t" + currentToken);
             return;
         }
     }
@@ -106,7 +106,7 @@ public class NonTerminal {
             if(currentToken.getToken().equals("=")){
                 currentToken = tokens.poll();
             }else {
-                System.out.println("Error");
+                System.out.println("Error constant list \t" + currentToken);
                 return;
             }
 
@@ -115,14 +115,14 @@ public class NonTerminal {
             if(currentToken.getToken().equals(";")){
                 currentToken = tokens.poll();
             }else {
-                System.out.println("Error");
+                System.out.println("Error constant list \t" + currentToken);
                 return;
             }
 
             constList();
 
         }else if(!currentToken.getToken().equals("var") && !currentToken.getToken().equals("begin")){
-            System.out.println("Error");
+            System.out.println("Error constant list \t" + currentToken);
             return;
         }
     }
@@ -135,7 +135,7 @@ public class NonTerminal {
             varList();
 
         }else if(!currentToken.getToken().equals("begin")){
-            System.out.println("Error");
+            System.out.println("Error var declaration \t" + currentToken);
             return;
         }
     }
@@ -148,14 +148,14 @@ public class NonTerminal {
             if(currentToken.getToken().equals(";")){
                 currentToken = tokens.poll();
             }else{
-                System.out.println("Error");
+                System.out.println("Error var list \t" + currentToken);
                 return;
             }
 
             varList();
 
         }else if(!currentToken.getToken().equals("begin")){
-            System.out.println("Error");
+            System.out.println("Error var list \t" + currentToken);
             return;
         }
 
@@ -167,7 +167,7 @@ public class NonTerminal {
         if(currentToken.getToken().equals(":")){
             currentToken = tokens.poll();
         }else {
-            System.out.println("Error");
+            System.out.println("Error var item \t" + currentToken);
             return;
         }
         dataType();
@@ -178,7 +178,7 @@ public class NonTerminal {
         if(currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID){
             currentToken = tokens.poll();
         }else{
-            System.out.println("Error");
+            System.out.println("Error name list \t" + currentToken);
             return;
         }
 
@@ -191,21 +191,18 @@ public class NonTerminal {
             currentToken = tokens.poll();
             nameList();
         }else if (!currentToken.getToken().equals(":")){
-            System.out.println("Error");
+            System.out.println("Error more names \t" + currentToken);
             return;
         }
     }
 
     //data-type --> integer | real |  char
     public void dataType(){
-        if(currentToken.getToken().equals("integer")){
-
-        }else if(currentToken.getToken().equals("real")){
-
-        }else if(currentToken.getToken().equals("char")){
-
+        if(currentToken.getToken().equals("integer") || currentToken.getToken().equals("real")
+        || currentToken.getToken().equals("char")){
+            currentToken = tokens.poll();
         }else {
-            System.out.println("Error");
+            System.out.println("Error data type \t" + currentToken);
             return;
         }
     }
@@ -223,14 +220,14 @@ public class NonTerminal {
             if(currentToken.getToken().equals(";")){
                 currentToken = tokens.poll();
             }else{
-                System.out.println("Error");
+                System.out.println("Error statement list \t" + currentToken);
                 return;
             }
 
             stmtList();
 
         }else if (!currentToken.getToken().equals("end")){
-            System.out.println("Error");
+            System.out.println("Error statement list \t" + currentToken);
             return;
         }
     }
@@ -249,11 +246,11 @@ public class NonTerminal {
                 }else if (currentToken.getToken().equals("while")){
                     whileStmt();
                 }else if (currentToken.getToken().equals("repeat")){
-                    readStmt();
+                    repeatStmt();
                 }else if (currentToken.getToken().equals("begin")){
                     block();
                 }else {
-                    System.out.println("Error");
+                    System.out.println("Error ror statement \t" + currentToken);
                     return;
                 }
     }
@@ -263,14 +260,14 @@ public class NonTerminal {
         if(currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID){
             currentToken = tokens.poll();
         }else {
-            System.out.println("Error");
+            System.out.println("Error assStmt \t" + currentToken);
             return;
         }
 
         if(currentToken.getToken().equals(":=")){
             currentToken = tokens.poll();
         }else {
-            System.out.println("Error");
+            System.out.println("Error assStmt \t" + currentToken);
             return;
         }
 
@@ -290,7 +287,7 @@ public class NonTerminal {
             term();
             expPrime();
         }else if (!currentToken.getToken().equals("end")){
-            System.out.println("Error");
+            System.out.println("Error exp prime \t" + currentToken);
             return;
         }
     }
@@ -301,32 +298,205 @@ public class NonTerminal {
         termPrime();
     }
 
-    public void termPrime(){}
+    // term-prime --> mul-oper  factor  term-prime  | lambda
+    public void termPrime(){
+        if(currentToken.getToken().equals("*") || currentToken.getToken().equals("/") ||
+                currentToken.getToken().equals("mod") || currentToken.getToken().equals("div") ){
+            mulOper();
+            factor();
+            termPrime();
+        }else if (!currentToken.getToken().equals("+") && !currentToken.getToken().equals("-")
+                || !currentToken.getToken().equals(";")){
+            System.out.println("Error term prime \t" + currentToken);
+            return;
+        }
+    }
 
-    public void factor(){}
+    // factor --> “(“ exp  “)” |  name-value
+    public void factor(){
 
-    public void addOper(){}
+        if(currentToken.getToken().equals("(")){
+            currentToken = tokens.poll();
+            exp();
+            if(currentToken.getToken().equals(")")){
+                currentToken = tokens.poll();
+            }else {
+                System.out.println("Error factor \t" + currentToken);
+                return;
+            }
+        }else if (currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID
+                || currentToken.getId() == CONSTANT.FLOAT_ID || currentToken.getId() == CONSTANT.INTEGER_ID){
+            nameValue();
+        }else {
+            System.out.println("Error factor \t" + currentToken);
+            return;
+        }
+    }
 
-    public void mulOper(){}
+    //add-oper --> “+”  |  “-“
+    public void addOper(){
+        if(currentToken.getToken().equals("+") || currentToken.getToken().equals("-") ){
+            currentToken = tokens.poll();
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
 
-    public void value(){}
+    //mul-oper --> “*”  |  “/”    |   mod  | div
+    public void mulOper(){
+        if(currentToken.getToken().equals("*") || currentToken.getToken().equals("/") ||
+                currentToken.getToken().equals("mod") || currentToken.getToken().equals("div")){
+            currentToken = tokens.poll();
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
 
-    public void readStmt(){}
+    //value --> “float-value”  | “integer-value”
+    public void value(){
+        if(currentToken.getId() == CONSTANT.FLOAT_ID || currentToken.getId() == CONSTANT.INTEGER_ID ){
+            currentToken = tokens.poll();
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
 
-    public void writeStmt(){}
+    // read-stmt --> read  “(“ name-list  “)”  | readln  “(“ name-list “)”
+    public void readStmt(){
+
+        if(currentToken.getToken().equals("read")
+                || currentToken.getToken().equals("readln")){
+
+            currentToken = tokens.poll();
+
+            if(currentToken.getToken().equals("(")){
+                currentToken = tokens.poll();
+            }else {
+                System.out.println("Error \t" + currentToken );
+                return;
+            }
+
+            nameList();
+
+            if(currentToken.getToken().equals(")")){
+                currentToken = tokens.poll();
+            }else {
+                System.out.println("Error \t" + currentToken);
+                return;
+            }
+
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
+
+    // write-stmt --> write  “(“ name-list “)”  |  writeln  “(“ name-list “)”
+    public void writeStmt(){
+        if(currentToken.getToken().equals("write")
+                || currentToken.getToken().equals("writeln")){
+
+            currentToken = tokens.poll();
+
+            if(currentToken.getToken().equals("(")){
+                currentToken = tokens.poll();
+            }else {
+                System.out.println("Error \t" + currentToken);
+                return;
+            }
+
+            nameList();
+
+            if(currentToken.getToken().equals(")")){
+                currentToken = tokens.poll();
+            }else {
+                System.out.println("Error \t" + currentToken);
+                return;
+            }
+
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
 
     public void ifStmt(){}
 
     public void elsePart(){}
 
-    public void whileStmt (){}
+    // while-stmt --> while  condition  do  statement
+    public void whileStmt (){
+        if(currentToken.getToken().equals("while")){
+            currentToken = tokens.poll() ;
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
 
-    public void repeatStmt(){}
+        condition();
 
-    public void condition(){}
+        if(currentToken.getToken().equals("do")){
+            currentToken = tokens.poll() ;
+        }else {
+            System.out.println("Error");
+            return;
+        }
 
-    public void nameValue(){}
+        statement();
 
-    public void relationalOper(){}
+    }
 
+    // repeat-stmt --> repeat   stmt-list   until   condition
+    public void repeatStmt(){
+        if(currentToken.getToken().equals("repeat")){
+            currentToken = tokens.poll() ;
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+
+        stmtList();
+
+        if(currentToken.getToken().equals("until")){
+            currentToken = tokens.poll() ;
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+
+        condition();
+    }
+
+    // condition --> name-value   relational-oper  name-value
+    public void condition(){
+        nameValue();
+        relationalOper();
+        nameValue();
+    }
+
+    // name-value --> “var-name”  | “const-name”  | value
+    public void nameValue(){
+        if(currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID){
+            currentToken = tokens.poll();
+        }else{
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
+
+    // relational-oper --> “=”  |   “<>”    |   “<” |  “<=” |  “>” |   “>=”
+    public void relationalOper(){
+        if(currentToken.getToken().equals("=") || currentToken.getToken().equals("<>") ||
+                currentToken.getToken().equals("<") || currentToken.getToken().equals("<=") ||
+                currentToken.getToken().equals(">") || currentToken.getToken().equals(">=")) {
+
+            currentToken = tokens.poll();
+        }else {
+            System.out.println("Error \t" + currentToken);
+            return;
+        }
+    }
 }
