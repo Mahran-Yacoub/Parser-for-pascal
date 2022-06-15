@@ -12,6 +12,7 @@ public class CONSTANT {
     public static final int FLOAT_ID = 2000;
     public static final int STRING_ID = 3000;
     public static final int USER_IDENTIFIERS_ID = 4000;
+    public static final int NEW_LINE = 5000;
     public static final File SYMBOLS_FILE = new File("src/programs/symbols.txt");
     public static final File KEYWORDS_FILE = new File("src/programs/keywords.txt");
     public static final File STANDARD_IDENTIFIERS_FILE = new File("src/programs/standardIdentifiers.txt");

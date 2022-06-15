@@ -17,6 +17,7 @@ public class Tokenization {
 
         try {
             Scanner scanner = new Scanner(file);
+            int counter = 1 ;
             while (scanner.hasNextLine()) {
 
                 char[] line = scanner.nextLine().toCharArray();
@@ -138,8 +139,10 @@ public class Tokenization {
 
                     }
 
-                    tokens.add(new Token(currentChar + "", Type.Error));
+                    tokens.add(new Token(currentChar + "", Type.ERROR));
                 }
+                tokens.add(new Token(counter+"",Type.LINE_NUMBER,CONSTANT.NEW_LINE));
+                counter++;
             }
 
         } catch (FileNotFoundException e) {

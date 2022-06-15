@@ -7,5 +7,6 @@ public enum Type {
     USER_IDENTIFIER,
     SYMBOL,
     STANDARD_IDENTIFIER,
-    Error
+    ERROR,
+    LINE_NUMBER
 }

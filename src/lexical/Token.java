@@ -18,6 +18,13 @@ public class Token {
         setId();
     }
 
+    public Token(String token, Type typeOfToken , int id) {
+        this.token = token;
+        this.typeOfToken = typeOfToken;
+        this.id = id ;
+    }
+
+
     public String getToken() {
         return token;
     }
@@ -56,7 +63,7 @@ public class Token {
         } else if (typeOfToken == Type.USER_IDENTIFIER) {
             this.id = CONSTANT.USER_IDENTIFIERS_ID;
 
-        } else if(typeOfToken == Type.Error){
+        } else if(typeOfToken == Type.ERROR){
             this.id = -1;
         } else if (typeOfToken == Type.SYMBOL || typeOfToken == Type.KEYWORDS
                 || typeOfToken == Type.STANDARD_IDENTIFIER) {
