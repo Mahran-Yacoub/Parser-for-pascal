@@ -424,14 +424,13 @@ public class NonTerminal {
         elsePart();
     }
 
-    // else-part --> else  statement  | lambda
+    // else-part --> else  statement
     public void elsePart() {
         if (currentToken.getToken().equals("else")) {
             currentToken = tokens.poll();
             statement();
-        } else if (!currentToken.getToken().equals(";")) {
+        } else {
             syntaxError();
-
         }
     }
 
