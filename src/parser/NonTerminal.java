@@ -1,5 +1,6 @@
 package parser;
 
+import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 import lexical.CONSTANT;
 import lexical.Token;
 
@@ -8,8 +9,18 @@ import java.util.ArrayList;
 public class NonTerminal {
 
     private SelectToken tokens;
-
     private Token currentToken;
+    private String errorMessage;
+
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    private void syntaxError() {
+        errorMessage = "Syntax Error in Token: " + currentToken.getToken() + "   in line: " + tokens.numberOfLine();
+        throw new SyntaxException(errorMessage);
+    }
 
     public NonTerminal(ArrayList<Token> tokens) {
 
@@ -25,7 +36,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals(".")) {
             System.out.println("Success");
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
+            syntaxError();
         }
     }
 
@@ -34,23 +45,20 @@ public class NonTerminal {
         if (currentToken.getToken().equals("program")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         if (currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
 
         if (currentToken.getToken().equals(";")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -59,8 +67,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("begin")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         stmtList();
@@ -68,8 +75,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("end")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -88,8 +94,7 @@ public class NonTerminal {
             constList();
 
         } else if (!currentToken.getToken().equals("var") && !currentToken.getToken().equals("begin")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -102,8 +107,7 @@ public class NonTerminal {
             if (currentToken.getToken().equals("=")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
             value();
@@ -111,15 +115,13 @@ public class NonTerminal {
             if (currentToken.getToken().equals(";")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
             constList();
 
         } else if (!currentToken.getToken().equals("var") && !currentToken.getToken().equals("begin")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -131,8 +133,7 @@ public class NonTerminal {
             varList();
 
         } else if (!currentToken.getToken().equals("begin")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -144,15 +145,13 @@ public class NonTerminal {
             if (currentToken.getToken().equals(";")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
             varList();
 
         } else if (!currentToken.getToken().equals("begin")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
     }
@@ -163,8 +162,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals(":")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
         dataType();
     }
@@ -174,8 +172,7 @@ public class NonTerminal {
         if (currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         moreNames();
@@ -188,8 +185,7 @@ public class NonTerminal {
             nameList();
         } else if (!currentToken.getToken().equals(":") &&
                 !currentToken.getToken().equals(")")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -199,9 +195,7 @@ public class NonTerminal {
                 || currentToken.getToken().equals("char")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
-            ;
+            syntaxError();
         }
     }
 
@@ -219,15 +213,13 @@ public class NonTerminal {
             if (currentToken.getToken().equals(";")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
             stmtList();
 
         } else if (!currentToken.getToken().equals("end") && !currentToken.getToken().equals("until")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -249,8 +241,7 @@ public class NonTerminal {
         } else if (currentToken.getToken().equals("begin")) {
             block();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -259,15 +250,13 @@ public class NonTerminal {
         if (currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         if (currentToken.getToken().equals(":=")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         exp();
@@ -288,8 +277,7 @@ public class NonTerminal {
         } else if (!currentToken.getToken().equals("else") &&
                 !currentToken.getToken().equals(";") &&
                 !currentToken.getToken().equals(")")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -309,8 +297,7 @@ public class NonTerminal {
         } else if (!currentToken.getToken().equals("+") && !currentToken.getToken().equals("-")
                 && !currentToken.getToken().equals(";") && !currentToken.getToken().equals("else")
                 && !currentToken.getToken().equals(")")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -323,15 +310,13 @@ public class NonTerminal {
             if (currentToken.getToken().equals(")")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
         } else if (currentToken.getId() == CONSTANT.USER_IDENTIFIERS_ID
                 || currentToken.getId() == CONSTANT.FLOAT_ID || currentToken.getId() == CONSTANT.INTEGER_ID) {
             nameValue();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -340,8 +325,8 @@ public class NonTerminal {
         if (currentToken.getToken().equals("+") || currentToken.getToken().equals("-")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
+            ;
         }
     }
 
@@ -351,8 +336,7 @@ public class NonTerminal {
                 currentToken.getToken().equals("mod") || currentToken.getToken().equals("div")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -361,8 +345,7 @@ public class NonTerminal {
         if (currentToken.getId() == CONSTANT.FLOAT_ID || currentToken.getId() == CONSTANT.INTEGER_ID) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -377,8 +360,7 @@ public class NonTerminal {
             if (currentToken.getToken().equals("(")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Error \t" + currentToken);
-                return;
+                syntaxError();
             }
 
             nameList();
@@ -386,13 +368,11 @@ public class NonTerminal {
             if (currentToken.getToken().equals(")")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -406,8 +386,7 @@ public class NonTerminal {
             if (currentToken.getToken().equals("(")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
             nameList();
@@ -415,13 +394,11 @@ public class NonTerminal {
             if (currentToken.getToken().equals(")")) {
                 currentToken = tokens.poll();
             } else {
-                System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-                System.exit(0);
+                syntaxError();
             }
 
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -431,8 +408,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("if")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         condition();
@@ -440,8 +416,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("then")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         statement();
@@ -455,9 +430,8 @@ public class NonTerminal {
             currentToken = tokens.poll();
             statement();
         } else if (!currentToken.getToken().equals(";")) {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
-            ;
+            syntaxError();
+
         }
     }
 
@@ -466,8 +440,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("while")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         condition();
@@ -475,8 +448,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("do")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         statement();
@@ -488,8 +460,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("repeat")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         stmtList();
@@ -497,8 +468,7 @@ public class NonTerminal {
         if (currentToken.getToken().equals("until")) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
 
         condition();
@@ -517,8 +487,7 @@ public class NonTerminal {
                 currentToken.getId() == CONSTANT.FLOAT_ID) {
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 
@@ -530,8 +499,7 @@ public class NonTerminal {
 
             currentToken = tokens.poll();
         } else {
-            System.out.println("Syntax Error in Token: " + currentToken.getToken() + "\t in line: " + tokens.numberOfLine());
-            System.exit(0);
+            syntaxError();
         }
     }
 }

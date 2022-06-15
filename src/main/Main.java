@@ -1,25 +1,25 @@
 package main;
 
-import lexical.Token;
-import lexical.Tokenization;
-import parser.NonTerminal;
-import java.io.File;
-import java.util.ArrayList;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 
-public class Main  {
+public class Main extends Application {
 
     public static void main(String[] args) {
+        Application.launch(args);
+    }
 
-        Tokenization tokenization = new Tokenization();
-        ArrayList<Token> tokens =
-                tokenization.getTokens(new File("C:\\Users\\HP\\OneDrive\\Desktop\\second semester\\COMP 439 _ Compiler\\Project\\H1-test.txt"));
+    @Override
+    public void start(Stage primaryStage) throws Exception {
 
-        NonTerminal nonTerminal = new NonTerminal(tokens);
-        try {
-            nonTerminal.progDecl();
-        }catch (NullPointerException exception){
-            System.out.println("No Tokens");
-        }
+        Parent root = FXMLLoader.load(getClass().getResource("/userinterface/Main.fxml"));
+        Scene scene = new Scene(root, 745, 565);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Parser");
+        primaryStage.show();
     }
 }
